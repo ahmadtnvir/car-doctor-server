@@ -48,10 +48,21 @@ async function run() {
       const id = req.params.id;
       const query = {_id: new ObjectId(id)};
       const options  = {
-        projection: { title: 1, price: 1, service_id: 1 },
+        projection: { img: 1, title: 1, price: 1, service_id: 1 },
       };
       const result = await carsCollection.findOne(query, options);
       res.send(result);
+    })
+
+    app.get('/bookings', async(req, res) => {
+      console.log(req.query.email);
+      let query = {};
+      if(req.query?.email){
+        query = {email: req.query.email}
+      }
+      const cursor = bookingsCollection.find(query)
+      const result = await cursor.toArray()
+      res.send(result)
     })
 
     app.post('/bookings', async(req, res) => {
