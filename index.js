@@ -44,32 +44,53 @@ async function run() {
       res.send(result);
     })
 
-    app.get('/services/:id', async(req,res) => {
+    app.get('/services/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id: new ObjectId(id)};
-      const options  = {
+      const query = { _id: new ObjectId(id) };
+      const options = {
         projection: { img: 1, title: 1, price: 1, service_id: 1 },
       };
       const result = await carsCollection.findOne(query, options);
       res.send(result);
     })
 
-    app.get('/bookings', async(req, res) => {
+    app.get('/bookings', async (req, res) => {
       console.log(req.query.email);
       let query = {};
-      if(req.query?.email){
-        query = {email: req.query.email}
+      if (req.query?.email) {
+        query = { email: req.query.email }
       }
       const cursor = bookingsCollection.find(query)
       const result = await cursor.toArray()
       res.send(result)
     })
 
-    app.post('/bookings', async(req, res) => {
+    app.post('/bookings', async (req, res) => {
       const booking = req.body;
       console.log(booking);
       const result = await bookingsCollection.insertOne(booking);
       res.send(result)
+    })
+
+    app.patch('/bookings/:id', async(req, res) => {
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)};
+      const update = req.body;
+      console.log(update);
+      const updateDoc = {
+        $set: {
+          status: update.status
+        }
+      }
+      const result = await bookingsCollection.updateOne(filter,updateDoc);
+      res.send(result);
+    })
+
+    app.delete('/bookings/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await bookingsCollection.deleteOne(query);
+      res.send(result);
     })
 
     // Send a ping to confirm a successful connection
